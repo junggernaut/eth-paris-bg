@@ -3,48 +3,35 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "./interfaces/IBuilderGardenTBARegistry.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract BuilderGardenTBARegistry is IBuilderGardenTBARegistry {
-  error InitializationFailed();
+contract BuilderGardenTBARegistry is IBuilderGardenTBARegistry, Ownable {
+  address private bgNftContract;
+  address private implementation;
 
-  address private _bgNftContract;
-
-  constructor(address bgNftContract) {
-    _bgNftContract = bgNftContract;
+  constructor(address _bgNftContract, address _implementation) {
+    bgNftContract = _bgNftContract;
+    implementation = _implementation;
   }
 
-  function createAccount(
-    address implementation,
-    uint256 chainId,
-    uint256 tokenId,
-    uint256 salt,
-    bytes calldata initData
-  ) external returns (address) {
-    bytes memory code = _creationCode(implementation, chainId, _bgNftContract, tokenId, salt);
+  function setImplAddress(address newImpl) external onlyOwner {
+    implementation = newImpl;
+  }
 
+  function createAccount(uint256 tokenId) external returns (address) {
+    //mumbai chainId = 80001, no init Data for BuilderGarden TBA
+    uint256 salt = uint256(keccak256("BuilderGarden"));
+    bytes memory code = _creationCode(implementation, 80001, bgNftContract, tokenId, salt);
     address _account = Create2.computeAddress(bytes32(salt), keccak256(code));
-
     if (_account.code.length != 0) return _account;
 
     _account = Create2.deploy(0, bytes32(salt), code);
-
-    if (initData.length != 0) {
-      (bool success, ) = _account.call(initData);
-      if (!success) revert InitializationFailed();
-    }
-
-    emit AccountCreated(_account, implementation, chainId, _bgNftContract, tokenId, salt);
-
+    emit AccountCreated(_account, implementation, 80001, bgNftContract, tokenId, salt);
     return _account;
   }
 
-  function account(
-    address implementation,
-    uint256 chainId,
-    uint256 tokenId,
-    uint256 salt
-  ) external view returns (address) {
-    bytes32 bytecodeHash = keccak256(_creationCode(implementation, chainId, _bgNftContract, tokenId, salt));
+  function account(uint256 chainId, uint256 tokenId, uint256 salt) external view returns (address) {
+    bytes32 bytecodeHash = keccak256(_creationCode(implementation, chainId, bgNftContract, tokenId, salt));
 
     return Create2.computeAddress(bytes32(salt), bytecodeHash);
   }
