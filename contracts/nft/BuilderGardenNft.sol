@@ -4,16 +4,16 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./interfaces/IBuilderGardenTBARegistry.sol";
-
-error SoulBounded();
+import "../interfaces/IBuilderGardenTBARegistry.sol";
 
 contract BuilderGardenNft is ERC721, Ownable {
+  error SoulBounded();
+
   address private builderGardenContract;
   IBuilderGardenTBARegistry private builderGardenTBARegistry;
   address private builderGardenTBAImpl;
 
-  constructor() ERC721("BuilderGardenNFT", "BG") {}
+  constructor() ERC721("BuilderGardenToken", "BGT") {}
 
   function setTBAInfo(
     address _builderGardenContract,
@@ -41,9 +41,7 @@ contract BuilderGardenNft is ERC721, Ownable {
     _safeMint(to, tokenId);
   }
 
-  function _beforeTokenTransfer(address _from, address _to, uint256, uint256) internal pure override {
-    if (_from != address(0) && _to != address(0)) {
-      revert SoulBounded();
-    }
+  function _beforeTokenTransfer(address, address, uint256, uint256) internal pure override {
+    revert SoulBounded();
   }
 }

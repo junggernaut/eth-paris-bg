@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "./interfaces/IBuilderGardenTBARegistry.sol";
-import "./BuilderGardenNft.sol";
+import "./nft/BuilderGardenNft.sol";
 
 contract BuilderGarden {
   IBuilderGardenTBARegistry private bgTbaRegistry;

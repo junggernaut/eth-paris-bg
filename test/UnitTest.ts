@@ -29,6 +29,7 @@ describe("initTest", function () {
   let user2: SignerWithAddress;
   let user2Tba: BuilderGardenTBA;
   let user3: SignerWithAddress;
+  let user3Tba: BuilderGardenTBA;
   let user4: SignerWithAddress;
 
   let user1FundingVault: BuilderVaultImpl;
@@ -114,12 +115,21 @@ describe("initTest", function () {
       assert(false, "no event occur");
     }
     expect(await builderGardenNft.balanceOf(user2.address)).to.equal(1);
+    expect(await builderGardenContract.getTBAAddress(user2.address)).to.equal(user2Tba.address);
+    //user3 as backer with same logic
+    const signupReciept2 = await (await builderGardenContract.connect(user3).backerSignUp()).wait();
+    if (signupReciept2.events) {
+      const event = signupReciept2.events.find(e => e.event === "SignUp") as Event;
+      if (event.args) {
+        user3Tba = (await ethers.getContractFactory("BuilderGardenTBA")).attach(event.args.tba) as BuilderGardenTBA;
+      }
+    }
   });
 
   it("user1(builder) create funding", async function () {
     const fundingConfig = {
-      amount: ethers.utils.parseEther("1"),
-      deadline: Math.floor(new Date().getTime() / 1000),
+      totalAmount: ethers.utils.parseEther("1"),
+      deadline: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     };
     const receipt = await (await builderVaultFactory.connect(user1).deployVault(fundingConfig)).wait();
 
@@ -129,12 +139,22 @@ describe("initTest", function () {
         user1FundingVault = (await ethers.getContractFactory("BuilderVaultImpl")).attach(
           event.args.vault,
         ) as BuilderVaultImpl;
-        console.log(user1FundingVault.address);
+        expect(await user1FundingVault.owner()).to.equal(user1.address);
       } else {
         assert(false, "no args of event");
       }
     } else {
       assert(false, "no event occur");
     }
+  });
+
+  it("user2, 3(backer) fund to user1(builder)", async function () {
+    await (await user1FundingVault.connect(user2).fund(10, { value: ethers.utils.parseEther("0.5") })).wait();
+    await (await user1FundingVault.connect(user3).fund(10, { value: ethers.utils.parseEther("0.5") })).wait();
+    expect((await user1FundingVault.getFundedInfo())[1]).to.equal(ethers.utils.parseEther("1"));
+  });
+
+  it("user1(builder) claim funded Token", async function () {
+    await user1FundingVault.connect(user1).claim();
   });
 });
