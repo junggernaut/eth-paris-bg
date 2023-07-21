@@ -6,15 +6,14 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
-
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "./interfaces/IERC6551Account.sol";
 
 import "./lib/MinimalReceiver.sol";
 import "./lib/ERC6551AccountLib.sol";
 
-contract BuilderGardenTBA is IERC165, IERC1271, IERC6551Account {
+contract BuilderGardenTBA is IERC1271, IERC6551Account, ERC1155Holder {
   uint256 public nonce;
 
   receive() external payable {}
@@ -47,8 +46,8 @@ contract BuilderGardenTBA is IERC165, IERC1271, IERC6551Account {
     return IERC721(tokenContract).ownerOf(tokenId);
   }
 
-  function supportsInterface(bytes4 interfaceId) public pure returns (bool) {
-    return (interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC6551Account).interfaceId);
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155Receiver) returns (bool) {
+    return interfaceId == type(IERC6551Account).interfaceId || super.supportsInterface(interfaceId);
   }
 
   function isValidSignature(bytes32 hash, bytes memory signature) external view returns (bytes4 magicValue) {

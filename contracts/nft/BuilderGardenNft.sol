@@ -41,7 +41,9 @@ contract BuilderGardenNft is ERC721, Ownable {
     _safeMint(to, tokenId);
   }
 
-  function _beforeTokenTransfer(address, address, uint256, uint256) internal pure override {
-    revert SoulBounded();
+  function _beforeTokenTransfer(address _from, address _to, uint256, uint256) internal pure override {
+    if (_from != address(0) && _to != address(0)) {
+      revert SoulBounded();
+    }
   }
 }

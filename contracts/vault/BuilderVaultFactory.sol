@@ -23,12 +23,7 @@ contract BuilderVaultFactory {
 
   function deployVault(FundingConfig calldata fundingConfig) external {
     address newVault = beacon.deployProxy();
-    BuilderVaultImpl(newVault).initialize(
-      msg.sender,
-      fundingConfig.totalAmount,
-      fundingConfig.deadline,
-      builderGardenTBARegistry
-    );
+    BuilderVaultImpl(newVault).initialize(msg.sender, fundingConfig.totalAmount, fundingConfig.deadline);
     emit VaultCreated(msg.sender, newVault);
   }
 }

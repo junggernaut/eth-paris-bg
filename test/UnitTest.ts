@@ -6,6 +6,7 @@ import { BigNumber, Event } from "ethers";
 import { ethers, run } from "hardhat";
 
 import {
+  ALT,
   BuilderGarden,
   BuilderGardenNft,
   BuilderGardenTBA,
@@ -44,6 +45,8 @@ describe("initTest", function () {
   let builderVaultBeacon: BuilderVaultBeacon;
   let builderVaultFactory: BuilderVaultFactory;
 
+  let altContract: ALT;
+
   before(async () => {
     [mainDeployer, user1, user2, user3, user4] = await ethers.getSigners();
     console.log(
@@ -70,12 +73,18 @@ describe("initTest", function () {
       await builderGardenNft.setTBAInfo(builderGardenContract.address, registryContract.address, tbaImpl.address)
     ).wait();
 
-    builderVaultImpl = (await deployContract("BuilderVaultImpl", mainDeployer)) as BuilderVaultImpl;
+    altContract = (await deployContract("ALT", mainDeployer, ["test"])) as ALT;
+
+    builderVaultImpl = (await deployContract("BuilderVaultImpl", mainDeployer, [
+      builderGardenContract.address,
+      altContract.address,
+    ])) as BuilderVaultImpl;
     builderVaultBeacon = (await deployContract("BuilderVaultBeacon", mainDeployer, [
       builderVaultImpl.address,
     ])) as BuilderVaultBeacon;
     builderVaultFactory = (await deployContract("BuilderVaultFactory", mainDeployer, [
       builderVaultBeacon.address,
+      registryContract.address,
     ])) as BuilderVaultFactory;
 
     console.log("builderGardenNft:", builderGardenNft.address);
@@ -156,5 +165,9 @@ describe("initTest", function () {
 
   it("user1(builder) claim funded Token", async function () {
     await user1FundingVault.connect(user1).claim();
+    expect(await user1FundingVault.isClaimed()).to.equal(true);
+    expect(await altContract.balanceOf(user1Tba.address, 1)).to.equal(20);
+    expect(await altContract.balanceOf(user2Tba.address, 2)).to.equal(10);
+    expect(await altContract.balanceOf(user3Tba.address, 2)).to.equal(10);
   });
 });
