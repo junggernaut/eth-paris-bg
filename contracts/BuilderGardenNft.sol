@@ -13,7 +13,7 @@ contract BuilderGardenNft is ERC721, Ownable {
     builderGardenContract = _builderGardenContract;
   }
 
-  function safeMint(address to, uint256 tokenId) public {
+  function safeMint(address to, uint256 tokenId) external {
     require(msg.sender == builderGardenContract);
     _safeMint(to, tokenId);
   }

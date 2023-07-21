@@ -7,6 +7,10 @@ import "./BuilderVaultProxy.sol";
 contract BuilderVaultBeacon is Ownable {
   address private implAddress;
 
+  constructor(address _implAddress) {
+    implAddress = _implAddress;
+  }
+
   function setImplAddress(address _implAddress) external onlyOwner {
     implAddress = _implAddress;
   }
