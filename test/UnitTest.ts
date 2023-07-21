@@ -87,6 +87,7 @@ describe("initTest", function () {
         user1Tba = (await ethers.getContractFactory("BuilderGardenTBA")).attach(event.args.tba) as BuilderGardenTBA;
         expect(await user1Tba.owner()).to.equal(user1.address);
         expect(event.args.tokenId).to.equal(1);
+        expect(event.args.userType).to.equal(0);
       } else {
         assert(false, "no args of event");
       }
@@ -104,6 +105,7 @@ describe("initTest", function () {
         user2Tba = (await ethers.getContractFactory("BuilderGardenTBA")).attach(event.args.tba) as BuilderGardenTBA;
         expect(await user2Tba.owner()).to.equal(user2.address);
         expect(event.args.tokenId).to.equal(2);
+        expect(event.args.userType).to.equal(1);
       } else {
         assert(false, "no args of event");
       }
