@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
+pragma solidity ^0.8.19;
 
 library Bytecode {
   error InvalidCodeAtRange(uint256 _size, uint256 _start, uint256 _end);
@@ -22,12 +21,7 @@ library Bytecode {
       <CODE>
     */
 
-    return abi.encodePacked(
-      hex"63",
-      uint32(_code.length),
-      hex"80_60_0E_60_00_39_60_00_F3",
-      _code
-    );
+    return abi.encodePacked(hex"63", uint32(_code.length), hex"80_60_0E_60_00_39_60_00_F3", _code);
   }
 
   /**
@@ -36,7 +30,9 @@ library Bytecode {
     @return size of the code on the given `_addr`
   */
   function codeSize(address _addr) internal view returns (uint256 size) {
-    assembly { size := extcodesize(_addr) }
+    assembly {
+      size := extcodesize(_addr)
+    }
   }
 
   /**
@@ -54,7 +50,7 @@ library Bytecode {
     if (csize == 0) return bytes("");
 
     if (_start > csize) return bytes("");
-    if (_end < _start) revert InvalidCodeAtRange(csize, _start, _end); 
+    if (_end < _start) revert InvalidCodeAtRange(csize, _start, _end);
 
     unchecked {
       uint256 reqSize = _end - _start;
