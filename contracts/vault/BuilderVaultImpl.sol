@@ -4,69 +4,62 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract BuilderVaultImpl is OwnableUpgradeable {
-  struct Funding {
-    address payable hacker;
-    address payable[] backers;
+  string private constant HACKATHON = "ETH PARIS";
+  uint256 private constant FUNDING_PRICE_UNIT = 0.05 ether;
+  uint256 private amount;
+  uint256 private deadline;
+
+  function initialize(address _builder, uint256 _amount, uint256 _deadline) external initializer {
+    _transferOwnership(_builder);
+    amount = _amount;
+    deadline = _deadline;
   }
 
-  // event SetN(uint n);
+  // function createProjectForFunding() public {
+  //   _projects.push(
+  //     Project({ hacker: payable(msg.sender), backers: new address payable[](0), totalFunded: 0, claimed: false })
+  //   );
+  //   emit Created(_projectId, msg.sender);
 
-  // 23-07-23, 17:00:00
-  string public constant HACKATHON = "Eth Paris";
-  uint256 public constant deadline = 1690099200;
+  //   _projectId++;
+  // }
 
-  // 2.5 ETH = 50 * 0.05 ETH
-  uint256 public constant max = 50;
-  uint256 public constant unit = 0.05 ether;
+  // function fundProject(uint256 projectId, uint256 amount) public payable {
+  //   require(block.timestamp <= FUNDING_DEADLINE, "REACHED DEADLINE");
+  //   require(msg.value == amount * FUNDING_PRICE_UNIT, "INEXACT AMOUNT");
 
-  Funding[] private _fundings;
+  //   Project storage funding = _projects[projectId];
+  //   require(funding.backers.length + amount <= CAP, "ALREADY CAPPED");
 
-  function initialize(address builder) external initializer {
-    _transferOwnership(builder);
-  }
+  //   for (uint256 i = 0; i < amount; i++) {
+  //     funding.backers.push(payable(msg.sender));
+  //   }
+  //   funding.totalFunded += msg.value;
+  //   emit Funded(projectId, msg.sender, msg.value);
+  // }
 
-  function register() public {
-    // todo: check if msg.sender is ERC6551 wallet.
-    _fundings.push(Funding(payable(msg.sender), new address payable[](0)));
-  }
+  // // function claim(uint256 projectId) public {
+  // //   // Project storage project = _projects[projectId];
+  // //   require(project.backers.length == CAP, "NOT CAPPED");
 
-  function invest(uint256 n, uint256 amount) public payable {
-    require(msg.value == amount * unit, "NOT MATCH");
+  // //   (project.hacker).transfer(project.totalFunded);
 
-    Funding storage funding = _fundings[n];
-    require(funding.backers.length + amount <= max, "Already Capped");
+  // //   // for (uint256 i = 0; i < CAP; i++) {
+  // //   //   _mint(project.backers[i], projectId, 1, "0x");
+  // //   // }
+  // //   project.claimed = true;
+  // //   emit Claimed(projectId, project.totalFunded);
+  // // }
 
-    for (uint256 i = 0; i < amount; i++) {
-      funding.backers.push(payable(msg.sender));
-    }
-  }
+  // function projects() public view returns (Project[] memory) {
+  //   return _projects;
+  // }
 
-  function numberOfFundings() public view returns (uint256) {
-    return _fundings.length;
-  }
+  // function project(uint256 projectId) public view returns (Project memory) {
+  //   return _projects[projectId];
+  // }
 
-  function fundings() public view returns (Funding[] memory) {
-    return _fundings;
-  }
-
-  function status(uint256 n) public view returns (uint256) {
-    return _fundings[n].backers.length;
-  }
-
-  function mint(uint256 id, uint256 value, bytes memory data) external {
-    _mint(msg.sender, id, value, data);
-  }
-
-  function claimAndSettle(uint256 n) public {
-    require(block.timestamp > deadline, "Not Yet");
-
-    Funding memory funding = _fundings[n];
-    require(funding.backers.length == max, "Not Capped");
-
-    (funding.hacker).transfer(max * unit);
-
-    for (uint256 i = 0; i < max; i++) {
-      _mint(funding.backers[i], 0, 1, "0x");
-    }
-  }
+  // function currentProjectId() public view returns (uint256) {
+  //   return _projectId;
+  // }
 }

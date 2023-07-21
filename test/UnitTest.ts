@@ -31,6 +31,8 @@ describe("initTest", function () {
   let user3: SignerWithAddress;
   let user4: SignerWithAddress;
 
+  let user1FundingVault: BuilderVaultImpl;
+
   let builderGardenNft: BuilderGardenNft;
   let registryContract: BuilderGardenTBARegistry;
   let tbaImpl: BuilderGardenTBA;
@@ -57,16 +59,15 @@ describe("initTest", function () {
 
     builderGardenNft = (await deployContract("BuilderGardenNft", mainDeployer)) as BuilderGardenNft;
     tbaImpl = (await deployContract("BuilderGardenTBA", mainDeployer)) as BuilderGardenTBA;
-    registryContract = (await deployContract("BuilderGardenTBARegistry", mainDeployer, [
-      builderGardenNft.address,
-      tbaImpl.address,
-    ])) as BuilderGardenTBARegistry;
-
+    registryContract = (await deployContract("BuilderGardenTBARegistry", mainDeployer)) as BuilderGardenTBARegistry;
     builderGardenContract = (await deployContract("BuilderGarden", mainDeployer, [
       registryContract.address,
       builderGardenNft.address,
+      tbaImpl.address,
     ])) as BuilderGarden;
-    await (await builderGardenNft.setBuilderGardenContract(builderGardenContract.address)).wait();
+    await (
+      await builderGardenNft.setTBAInfo(builderGardenContract.address, registryContract.address, tbaImpl.address)
+    ).wait();
 
     builderVaultImpl = (await deployContract("BuilderVaultImpl", mainDeployer)) as BuilderVaultImpl;
     builderVaultBeacon = (await deployContract("BuilderVaultBeacon", mainDeployer, [
@@ -79,7 +80,7 @@ describe("initTest", function () {
     console.log("builderGardenNft:", builderGardenNft.address);
   });
 
-  it("user1 as builder", async function () {
+  it("builder: user1 signUp", async function () {
     const signupReciept = await (await builderGardenContract.connect(user1).builderSignUp()).wait();
     if (signupReciept.events) {
       const event = signupReciept.events.find(e => e.event === "SignUp") as Event;
@@ -97,7 +98,7 @@ describe("initTest", function () {
     expect(await builderGardenNft.balanceOf(user1.address)).to.equal(1);
   });
 
-  it("user2 as backer", async function () {
+  it("backer: user2 signUp", async function () {
     const signupReciept = await (await builderGardenContract.connect(user2).backerSignUp()).wait();
     if (signupReciept.events) {
       const event = signupReciept.events.find(e => e.event === "SignUp") as Event;
@@ -113,5 +114,27 @@ describe("initTest", function () {
       assert(false, "no event occur");
     }
     expect(await builderGardenNft.balanceOf(user2.address)).to.equal(1);
+  });
+
+  it("user1(builder) create funding", async function () {
+    const fundingConfig = {
+      amount: ethers.utils.parseEther("1"),
+      deadline: Math.floor(new Date().getTime() / 1000),
+    };
+    const receipt = await (await builderVaultFactory.connect(user1).deployVault(fundingConfig)).wait();
+
+    if (receipt.events) {
+      const event = receipt.events.find(e => e.event === "VaultCreated") as Event;
+      if (event.args) {
+        user1FundingVault = (await ethers.getContractFactory("BuilderVaultImpl")).attach(
+          event.args.vault,
+        ) as BuilderVaultImpl;
+        console.log(user1FundingVault.address);
+      } else {
+        assert(false, "no args of event");
+      }
+    } else {
+      assert(false, "no event occur");
+    }
   });
 });

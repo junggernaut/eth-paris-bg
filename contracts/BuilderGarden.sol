@@ -7,6 +7,8 @@ import "./BuilderGardenNft.sol";
 contract BuilderGarden {
   IBuilderGardenTBARegistry private bgTbaRegistry;
   BuilderGardenNft private bgNftContract;
+  address private tbaImpl;
+
   uint256 private backerCounter;
   uint256 private builderCounter;
   mapping(address => address) private eoaToTBA;
@@ -14,9 +16,10 @@ contract BuilderGarden {
   //0 for builder, 1 for backer
   event SignUp(address eoa, address tba, uint256 tokenId, uint256 userType);
 
-  constructor(address _bgTbaRegistry, address _bgNftContract) {
+  constructor(address _bgTbaRegistry, address _bgNftContract, address _tbaImpl) {
     bgTbaRegistry = IBuilderGardenTBARegistry(_bgTbaRegistry);
     bgNftContract = BuilderGardenNft(_bgNftContract);
+    tbaImpl = _tbaImpl;
   }
 
   function getBackerNumber() public view returns (uint256) {
@@ -34,7 +37,7 @@ contract BuilderGarden {
   function builderSignUp() public {
     require(bgNftContract.balanceOf(msg.sender) == 0);
     bgNftContract.safeMint(msg.sender, 2 * builderCounter + 1);
-    address tbaAddress = bgTbaRegistry.createAccount(2 * builderCounter + 1);
+    address tbaAddress = bgTbaRegistry.createAccount(tbaImpl, address(bgNftContract), 2 * builderCounter + 1);
     eoaToTBA[msg.sender] = tbaAddress;
 
     emit SignUp(msg.sender, tbaAddress, 2 * builderCounter + 1, 0);
@@ -44,7 +47,7 @@ contract BuilderGarden {
   function backerSignUp() public {
     require(bgNftContract.balanceOf(msg.sender) == 0);
     bgNftContract.safeMint(msg.sender, 2 * (backerCounter + 1));
-    address tbaAddress = bgTbaRegistry.createAccount(2 * (backerCounter + 1));
+    address tbaAddress = bgTbaRegistry.createAccount(tbaImpl, address(bgNftContract), 2 * (backerCounter + 1));
     eoaToTBA[msg.sender] = tbaAddress;
 
     emit SignUp(msg.sender, tbaAddress, 2 * (backerCounter + 1), 1);

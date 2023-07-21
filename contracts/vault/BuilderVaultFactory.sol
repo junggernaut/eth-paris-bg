@@ -2,8 +2,14 @@
 pragma solidity ^0.8.19;
 
 import "../interfaces/IBuilderVaultBeacon.sol";
+import "./BuilderVaultImpl.sol";
 
 contract BuilderVaultFactory {
+  struct FundingConfig {
+    uint256 amount;
+    uint256 deadline;
+  }
+
   IBuilderVaultBeacon immutable beacon;
 
   constructor(address _beacon) {
@@ -12,9 +18,9 @@ contract BuilderVaultFactory {
 
   event VaultCreated(address builder, address vault);
 
-  function deployVault() external {
+  function deployVault(FundingConfig calldata fundingConfig) external {
     address newVault = beacon.deployProxy();
-    // newVault.initialize
+    BuilderVaultImpl(newVault).initialize(msg.sender, fundingConfig.amount, fundingConfig.deadline);
     emit VaultCreated(msg.sender, newVault);
   }
 }

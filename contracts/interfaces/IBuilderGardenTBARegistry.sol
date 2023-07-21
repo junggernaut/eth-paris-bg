@@ -11,7 +11,13 @@ interface IBuilderGardenTBARegistry {
     uint256 salt
   );
 
-  function createAccount(uint256 tokenId) external returns (address);
+  function createAccount(address tbaImpl, address nftContract, uint256 tokenId) external returns (address);
 
-  function account(uint256 chainId, uint256 tokenId, uint256 salt) external view returns (address);
+  function account(
+    address tbaImpl,
+    address nftContract,
+    uint256 chainId,
+    uint256 tokenId,
+    uint256 salt
+  ) external view returns (address);
 }

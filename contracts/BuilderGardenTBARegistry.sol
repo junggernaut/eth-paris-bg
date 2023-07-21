@@ -6,32 +6,26 @@ import "./interfaces/IBuilderGardenTBARegistry.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BuilderGardenTBARegistry is IBuilderGardenTBARegistry, Ownable {
-  address private bgNftContract;
-  address private tba;
-
-  constructor(address _bgNftContract, address _tba) {
-    bgNftContract = _bgNftContract;
-    tba = _tba;
-  }
-
-  function setImplAddress(address newTbaImpl) external onlyOwner {
-    tba = newTbaImpl;
-  }
-
-  function createAccount(uint256 tokenId) external returns (address) {
+  function createAccount(address tbaImpl, address nftContract, uint256 tokenId) external returns (address) {
     // no init Data for BuilderGarden TBA
     uint256 salt = uint256(keccak256("BuilderGarden"));
-    bytes memory code = _creationCode(tba, block.chainid, bgNftContract, tokenId, salt);
+    bytes memory code = _creationCode(tbaImpl, block.chainid, nftContract, tokenId, salt);
     address _account = Create2.computeAddress(bytes32(salt), keccak256(code));
     if (_account.code.length != 0) return _account;
 
     _account = Create2.deploy(0, bytes32(salt), code);
-    emit AccountCreated(_account, tba, block.chainid, bgNftContract, tokenId, salt);
+    emit AccountCreated(_account, tbaImpl, block.chainid, nftContract, tokenId, salt);
     return _account;
   }
 
-  function account(uint256 chainId, uint256 tokenId, uint256 salt) external view returns (address) {
-    bytes32 bytecodeHash = keccak256(_creationCode(tba, chainId, bgNftContract, tokenId, salt));
+  function account(
+    address tbaImpl,
+    address nftContract,
+    uint256 chainId,
+    uint256 tokenId,
+    uint256 salt
+  ) external view returns (address) {
+    bytes32 bytecodeHash = keccak256(_creationCode(tbaImpl, chainId, nftContract, tokenId, salt));
 
     return Create2.computeAddress(bytes32(salt), bytecodeHash);
   }
