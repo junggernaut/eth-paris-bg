@@ -37,6 +37,19 @@ let builderVaultFactory: BuilderVaultFactory;
 let altContract: ALT;
 
 async function main() {
+  [mainDeployer, user1, user2, user3, user4] = await ethers.getSigners();
+  console.log(
+    "mainDeployer:",
+    mainDeployer.address,
+    "\nuser1:",
+    user1.address,
+    "\nuser2: ",
+    user2.address,
+    "\nuser3",
+    user3.address,
+    "\n",
+  );
+
   const deployContract = async (contractName: string, signer: SignerWithAddress, args: unknown[] = []) => {
     const factory = await ethers.getContractFactory(contractName, signer);
     const contract = await factory.deploy(...args);
@@ -70,7 +83,12 @@ async function main() {
     registryContract.address,
   ])) as BuilderVaultFactory;
 
-  console.log("builderGardenNft:", builderGardenNft.address);
+  console.log(
+    "builderGardenContract:",
+    builderGardenContract.address,
+    "\nBuilderVaultFactory: ",
+    builderVaultFactory.address,
+  );
 }
 
 main()
