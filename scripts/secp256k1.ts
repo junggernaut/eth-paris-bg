@@ -61,25 +61,25 @@ async function main() {
     "\n",
   );
 
-  // const msg = randomBytes(32);
-  // let privKey;
-  // do {
-  //   privKey = randomBytes(32);
-  // } while (!secp256k1.privateKeyVerify(privKey));
+  const msg = randomBytes(32);
+  let privKey;
+  do {
+    privKey = randomBytes(32);
+  } while (!secp256k1.privateKeyVerify(privKey));
 
-  // const pubKey = secp256k1.publicKeyCreate(privKey);
-  // const pubkeyHex = Buffer.from(pubKey).toString("hex");
-  // const privkeyHex = privKey.toString("hex");
-  // console.log(pubkeyHex, "\n", privkeyHex);
+  const pubKey = secp256k1.publicKeyCreate(privKey);
+  const pubkeyHex = Buffer.from(pubKey).toString("hex");
+  const privkeyHex = privKey.toString("hex");
+  console.log(pubkeyHex, "\n", privkeyHex);
 
-  // const res = await axios.post("https://proof-service.next.id/v1/proof/payload", {
-  //   action: "create",
-  //   platform: "twitter",
-  //   identity: "SeungAnJung",
-  //   public_key: pubkeyHex,
-  // });
+  const res = await axios.post("https://proof-service.next.id/v1/proof/payload", {
+    action: "create",
+    platform: "github",
+    identity: "junggernaut",
+    public_key: pubkeyHex,
+  });
 
-  // console.log(res.data);
+  console.log(res.data.post_content.default);
 
   // const message = Buffer.from(res.data.sign_payload);
   // const secretKey = Buffer.from(privkeyHex, "hex");
@@ -145,9 +145,9 @@ async function main() {
   // });
 
   const res1 = await axios.get(
-    "https://proof-service.next.id/v1/proof?platform=ethereum&identity=0xA29B144A449E414A472c60C7AAf1aaFfE329021D",
+    "https://proof-service.next.id/v1/proof?platform=ethereum&identity=0x9ea091Ea7099441011e2e5247A0Fff48E9970aA1",
   );
-  console.log(res1.data, res1.data.ids[0].proofs);
+  console.log(res1.data);
 }
 
 main()

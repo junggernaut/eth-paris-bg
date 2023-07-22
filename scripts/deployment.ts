@@ -101,6 +101,65 @@ async function main() {
     "\nALT: ",
     altContract.address,
   );
+
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // verify contracts
+  await run("verify:verify", {
+    address: builderGardenNft.address,
+    constructorArguments: [],
+  }).catch(error => console.log(error));
+
+  await delay(5000);
+
+  // verify contracts
+  await run("verify:verify", {
+    address: tbaImpl.address,
+    constructorArguments: [],
+  }).catch(error => console.log(error));
+
+  await delay(5000);
+  // verify contracts
+  await run("verify:verify", {
+    address: registryContract.address,
+    constructorArguments: [],
+  }).catch(error => console.log(error));
+
+  await delay(5000);
+  // verify contracts
+  await run("verify:verify", {
+    address: builderGardenContract.address,
+    constructorArguments: [registryContract.address, builderGardenNft.address, tbaImpl.address],
+  }).catch(error => console.log(error));
+
+  await delay(5000);
+
+  // verify contracts
+  await run("verify:verify", {
+    address: altContract.address,
+    constructorArguments: ["test"],
+  }).catch(error => console.log(error));
+
+  await delay(5000); // verify contracts
+  await run("verify:verify", {
+    address: builderVaultImpl.address,
+    constructorArguments: [builderGardenContract.address, altContract.address],
+  }).catch(error => console.log(error));
+
+  await delay(5000); // verify contracts
+  await run("verify:verify", {
+    address: builderVaultBeacon.address,
+    constructorArguments: [builderVaultImpl.address],
+  }).catch(error => console.log(error));
+
+  await delay(5000);
+
+  await run("verify:verify", {
+    address: builderVaultFactory.address,
+    constructorArguments: [builderVaultBeacon.address, registryContract.address],
+  }).catch(error => console.log(error));
+
+  await delay(5000);
 }
 
 main()

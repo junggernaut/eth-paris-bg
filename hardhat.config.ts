@@ -58,6 +58,8 @@ if (!mainnetAlchemyApiKey) {
   throw new Error("Please set your MAINNET_ALCHEMY_API_KEY in a .env file");
 }
 
+const sepoliaAlchemyApiKey: string | undefined = process.env.SEPOLIA_ALCHEMY_API_KEY;
+
 const mumbaiAlchemyApiKey: string | undefined = process.env.MUMBAI_ALCHEMY_API_KEY;
 if (!mumbaiAlchemyApiKey) {
   throw new Error("Please set your MUMBAI_ALCHEMY_API_KEY in a .env file");
@@ -73,6 +75,7 @@ const chainIds = {
   "optimism-mainnet": 10,
   "polygon-mainnet": 137,
   "polygon-mumbai": 80001,
+  sepolia: 11155111,
 };
 
 function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
@@ -89,6 +92,10 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
       break;
     case "polygon-mumbai":
       jsonRpcUrl = "https://polygon-mumbai.g.alchemy.com/v2/" + goerliAlchemyApiKey;
+      accounts = [privateKeyMainDeployer, privateKeyProxyAdmin, privateKey1, privateKey2, privateKey3, privateKeyUser];
+      break;
+    case "sepolia":
+      jsonRpcUrl = "https://eth-sepolia.g.alchemy.com/v2/" + sepoliaAlchemyApiKey;
       accounts = [privateKeyMainDeployer, privateKeyProxyAdmin, privateKey1, privateKey2, privateKey3, privateKeyUser];
       break;
     default:
@@ -109,6 +116,7 @@ const config: HardhatUserConfig = {
       goerli: process.env.ETHERSCAN_API_KEY || "",
       mainnet: process.env.ETHERSCAN_API_KEY || "",
       "polygon-mumbai": process.env.POLYGONSCAN_API_KEY || "",
+      sepolia: process.env.ETHERSCAN_API_KEY || "",
     },
   },
   gasReporter: {
@@ -128,6 +136,7 @@ const config: HardhatUserConfig = {
       chainId: chainIds.hardhat,
     },
     goerli: getChainConfig("goerli"),
+    sepolia: getChainConfig("sepolia"),
     mainnet: getChainConfig("mainnet"),
     "polygon-mumbai": getChainConfig("polygon-mumbai"),
   },
