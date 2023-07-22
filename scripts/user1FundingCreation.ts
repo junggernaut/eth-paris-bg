@@ -79,20 +79,22 @@ async function main() {
   const funding = {
     title: "seunganFunding",
     builder: user1.address,
-    amount: ethers.utils.parseEther("0.5").toString(),
+    totalAmount: ethers.utils.parseEther("0.5").toString(),
     deadline: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
     hackathon: "ethParis",
     story: "believe me",
+    backers: [],
+    currentAmount: ethers.utils.parseEther("0").toString(),
   };
 
-  // await axios.post("http://localhost:3000/vault/", funding);
+  await axios.post("http://localhost:3001/vault/", funding);
 
   const fundingConfig = {
     totalAmount: ethers.utils.parseEther("0.5"),
     deadline: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
     title: "seunganFunding",
   };
-  const receipt = await (await builderVaultFactory.connect(user1).deployVault(fundingConfig)).wait();
+  // const receipt = await (await builderVaultFactory.connect(user1).deployVault(fundingConfig)).wait();
 }
 
 main()

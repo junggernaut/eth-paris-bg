@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import axios from "axios";
+import { getContractFactory } from "@nomiclabs/hardhat-ethers/types";
 import { ethers, run } from "hardhat";
 
 import {
@@ -37,6 +37,13 @@ let builderVaultFactory: BuilderVaultFactory;
 
 let altContract: ALT;
 
+const deployContract = async (contractName: string, signer: SignerWithAddress, args: unknown[] = []) => {
+  const factory = await ethers.getContractFactory(contractName, signer);
+  const contract = await factory.deploy(...args);
+  await contract.deployTransaction.wait();
+  return contract;
+};
+
 async function main() {
   [mainDeployer, user1, user2, user3, user4] = await ethers.getSigners();
   console.log(
@@ -50,29 +57,19 @@ async function main() {
     user3.address,
     "\n",
   );
-  builderGardenContract = (await (
-    await ethers.getContractFactory("BuilderGarden")
-  ).attach("0x345d7C0c8564F44484456a2933eF23B8027a5919")) as BuilderGarden;
 
-  console.log(await builderGardenContract.getBackerNumber());
+  builderVaultImpl = (await deployContract("BuilderVaultImpl", mainDeployer, [
+    "0x345d7C0c8564F44484456a2933eF23B8027a5919",
+    "0x29C20FE1717415c863d58Df77eb7Edd28F5627f6",
+  ])) as BuilderVaultImpl;
 
-  const user = {
-    nickName: "seungan",
-    walletAddress: "0x9ea091Ea7099441011e2e5247A0Fff48E9970aA1",
-    userType: "builder",
-    role: "Full Stack Developer",
-    interest: ["#Defi", "#NFT"],
-    social: {
-      twitter: "https://twitter.com/SeungAnJung",
-    },
-    pow: {
-      github: "junggernaut",
-    },
-  };
+  builderVaultBeacon = (await (
+    await ethers.getContractFactory("BuilderVaultBeacon")
+  ).attach("0x71FA6902fc9607c881D9F915d67E23B3dDB07214")) as BuilderVaultBeacon;
 
-  await axios.post("http://localhost:3001/user/", user);
+  await (await builderVaultBeacon.setImplAddress(builderVaultImpl.address)).wait();
 
-  // const signupReciept = await (await builderGardenContract.connect(user1).builderSignUp("seungan")).wait();
+  console.log("builderVaultImpl: ", builderVaultImpl.address);
 }
 
 main()

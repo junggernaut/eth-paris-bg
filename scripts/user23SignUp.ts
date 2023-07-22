@@ -56,23 +56,20 @@ async function main() {
 
   console.log(await builderGardenContract.getBackerNumber());
 
-  const user = {
-    nickName: "seungan",
-    walletAddress: "0x9ea091Ea7099441011e2e5247A0Fff48E9970aA1",
+  const user2Builder = {
+    nickName: "gunwoo",
+    walletAddress: user2.address,
     userType: "builder",
     role: "Full Stack Developer",
     interest: ["#Defi", "#NFT"],
     social: {
-      twitter: "https://twitter.com/SeungAnJung",
-    },
-    pow: {
-      github: "junggernaut",
+      twitter: "https://twitter.com/0xdagarn",
     },
   };
 
-  await axios.post("http://localhost:3001/user/", user);
+  await axios.post("http://localhost:3001/user/", user2Builder);
 
-  // const signupReciept = await (await builderGardenContract.connect(user1).builderSignUp("seungan")).wait();
+  // const signupReciept = await (await builderGardenContract.connect(user2).builderSignUp("gunwoo")).wait();
 }
 
 main()

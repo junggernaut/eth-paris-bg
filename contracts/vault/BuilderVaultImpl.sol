@@ -21,6 +21,8 @@ contract BuilderVaultImpl is OwnableUpgradeable {
   address[] private backers;
   mapping(address => uint256) private amountForBacker;
 
+  event Funded(address vault, address backer, uint256 amount);
+
   constructor(address _builderGarden, address _altContract) {
     builderGarden = IBuilderGarden(_builderGarden);
     altContract = IALT(_altContract);
@@ -48,6 +50,8 @@ contract BuilderVaultImpl is OwnableUpgradeable {
       backers.push(backerTBA);
     }
     amountForBacker[backerTBA] += numUnits;
+
+    emit Funded(address(this), msg.sender, msg.value);
   }
 
   function claim() external onlyOwner {
