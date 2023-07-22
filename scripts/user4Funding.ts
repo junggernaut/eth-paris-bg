@@ -50,26 +50,12 @@ async function main() {
     user3.address,
     "\n",
   );
-  builderGardenContract = (await (
-    await ethers.getContractFactory("BuilderGarden")
-  ).attach("0x345d7C0c8564F44484456a2933eF23B8027a5919")) as BuilderGarden;
 
-  console.log(await builderGardenContract.getBackerNumber());
+  user1FundingVault = (await (
+    await ethers.getContractFactory("BuilderVaultImpl")
+  ).attach("0xccD7DD665195Dc527c9B6250Fe56FF6a3c8bE03a")) as BuilderVaultImpl;
 
-  const user2Builder = {
-    nickName: "gunwoo",
-    walletAddress: user2.address,
-    userType: "builder",
-    role: "Full Stack Developer",
-    interest: ["#Defi", "#NFT"],
-    social: {
-      twitter: "https://twitter.com/0xdagarn",
-    },
-  };
-
-  await axios.post("http://localhost:3001/user/", user2Builder);
-
-  // const signupReciept = await (await builderGardenContract.connect(user2).builderSignUp("gunwoo")).wait();
+  await (await user1FundingVault.connect(user4).fund(5, { value: ethers.utils.parseEther("0.25") })).wait();
 }
 
 main()

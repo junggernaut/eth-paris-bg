@@ -55,7 +55,7 @@ async function main() {
     await ethers.getContractFactory("BuilderVaultImpl")
   ).attach("0xccD7DD665195Dc527c9B6250Fe56FF6a3c8bE03a")) as BuilderVaultImpl;
 
-  await (await user1FundingVault.connect(user2).fund(5, { value: ethers.utils.parseEther("0.25") })).wait();
+  await (await user1FundingVault.connect(user3).fund(5, { value: ethers.utils.parseEther("0.25") })).wait();
 }
 
 main()

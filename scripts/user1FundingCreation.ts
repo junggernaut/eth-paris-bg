@@ -24,6 +24,7 @@ let user3Tba: BuilderGardenTBA;
 let user4: SignerWithAddress;
 
 let user1FundingVault: BuilderVaultImpl;
+let user2FundingVault: BuilderVaultImpl;
 
 let builderGardenNft: BuilderGardenNft;
 let registryContract: BuilderGardenTBARegistry;
@@ -87,7 +88,7 @@ async function main() {
     currentAmount: ethers.utils.parseEther("0").toString(),
   };
 
-  await axios.post("http://localhost:3001/vault/", funding);
+  // await axios.post("http://localhost:3001/vault/", funding);
 
   const fundingConfig = {
     totalAmount: ethers.utils.parseEther("0.5"),
@@ -95,6 +96,27 @@ async function main() {
     title: "seunganFunding",
   };
   // const receipt = await (await builderVaultFactory.connect(user1).deployVault(fundingConfig)).wait();
+
+  // const funding2 = {
+  //   title: "help gunwoo",
+  //   builder: user2.address,
+  //   totalAmount: ethers.utils.parseEther("0.5").toString(),
+  //   deadline: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
+  //   hackathon: "ethParis",
+  //   story: "i am gunwoo. korea no.1 hacker.",
+  //   backers: [],
+  //   currentAmount: ethers.utils.parseEther("0").toString(),
+  // };
+
+  // await axios.post("http://100.26.178.122:3001/vault/", funding2);
+
+  // const receipt = await (await builderVaultFactory.connect(user2).deployVault(funding2)).wait();
+
+  user2FundingVault = (await (
+    await ethers.getContractFactory("BuilderVaultImpl")
+  ).attach("0x8B146cd8dB1CaEa2398bfe82446959E1577E4e97")) as BuilderVaultImpl;
+
+  console.log(await user2FundingVault.getFundedInfo());
 }
 
 main()
