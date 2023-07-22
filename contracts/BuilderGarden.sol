@@ -14,7 +14,7 @@ contract BuilderGarden {
   mapping(address => address) private eoaToTBA;
 
   //0 for builder, 1 for backer
-  event SignUp(address eoa, address tba, uint256 tokenId, uint256 userType);
+  event SignUp(string nickName, address eoa, address tba, uint256 tokenId, uint256 userType);
 
   constructor(address _bgTbaRegistry, address _bgNftContract, address _tbaImpl) {
     bgTbaRegistry = IBuilderGardenTBARegistry(_bgTbaRegistry);
@@ -34,23 +34,23 @@ contract BuilderGarden {
     return eoaToTBA[user];
   }
 
-  function builderSignUp() public {
+  function builderSignUp(string calldata nickName) public {
     require(bgNftContract.balanceOf(msg.sender) == 0);
     bgNftContract.safeMint(msg.sender, 2 * builderCounter + 1);
     address tbaAddress = bgTbaRegistry.createAccount(tbaImpl, address(bgNftContract), 2 * builderCounter + 1);
     eoaToTBA[msg.sender] = tbaAddress;
 
-    emit SignUp(msg.sender, tbaAddress, 2 * builderCounter + 1, 0);
+    emit SignUp(nickName, msg.sender, tbaAddress, 2 * builderCounter + 1, 0);
     ++builderCounter;
   }
 
-  function backerSignUp() public {
+  function backerSignUp(string calldata nickName) public {
     require(bgNftContract.balanceOf(msg.sender) == 0);
     bgNftContract.safeMint(msg.sender, 2 * (backerCounter + 1));
     address tbaAddress = bgTbaRegistry.createAccount(tbaImpl, address(bgNftContract), 2 * (backerCounter + 1));
     eoaToTBA[msg.sender] = tbaAddress;
 
-    emit SignUp(msg.sender, tbaAddress, 2 * (backerCounter + 1), 1);
+    emit SignUp(nickName, msg.sender, tbaAddress, 2 * (backerCounter + 1), 1);
     ++backerCounter;
   }
 }

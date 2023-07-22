@@ -7,6 +7,7 @@ import "../interfaces/IBuilderGardenTBARegistry.sol";
 
 contract BuilderVaultFactory {
   struct FundingConfig {
+    string title;
     uint256 totalAmount;
     uint256 deadline;
   }
@@ -19,11 +20,11 @@ contract BuilderVaultFactory {
     builderGardenTBARegistry = IBuilderGardenTBARegistry(_builderGardenTBARegistry);
   }
 
-  event VaultCreated(address builder, address vault);
+  event VaultCreated(string title, address builder, address vault, FundingConfig fundingConfig);
 
   function deployVault(FundingConfig calldata fundingConfig) external {
     address newVault = beacon.deployProxy();
     BuilderVaultImpl(newVault).initialize(msg.sender, fundingConfig.totalAmount, fundingConfig.deadline);
-    emit VaultCreated(msg.sender, newVault);
+    emit VaultCreated(fundingConfig.title, msg.sender, newVault, fundingConfig);
   }
 }

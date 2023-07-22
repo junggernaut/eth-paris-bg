@@ -58,6 +58,11 @@ if (!mainnetAlchemyApiKey) {
   throw new Error("Please set your MAINNET_ALCHEMY_API_KEY in a .env file");
 }
 
+const mumbaiAlchemyApiKey: string | undefined = process.env.MUMBAI_ALCHEMY_API_KEY;
+if (!mumbaiAlchemyApiKey) {
+  throw new Error("Please set your MUMBAI_ALCHEMY_API_KEY in a .env file");
+}
+
 const chainIds = {
   "arbitrum-mainnet": 42161,
   avalanche: 43114,
@@ -82,6 +87,10 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
       jsonRpcUrl = "https://eth-mainnet.g.alchemy.com/v2/" + goerliAlchemyApiKey;
       accounts = [privateKeyMainDeployer, privateKeyProxyAdmin, privateKey1, privateKey2, privateKey3, privateKeyUser];
       break;
+    case "polygon-mumbai":
+      jsonRpcUrl = "https://polygon-mumbai.g.alchemy.com/v2/" + goerliAlchemyApiKey;
+      accounts = [privateKeyMainDeployer, privateKeyProxyAdmin, privateKey1, privateKey2, privateKey3, privateKeyUser];
+      break;
     default:
       jsonRpcUrl = ""; //not add yet for polygon, etc..
       accounts = [];
@@ -99,6 +108,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       goerli: process.env.ETHERSCAN_API_KEY || "",
       mainnet: process.env.ETHERSCAN_API_KEY || "",
+      "polygon-mumbai": process.env.POLYGONSCAN_API_KEY || "",
     },
   },
   gasReporter: {
@@ -119,6 +129,7 @@ const config: HardhatUserConfig = {
     },
     goerli: getChainConfig("goerli"),
     mainnet: getChainConfig("mainnet"),
+    "polygon-mumbai": getChainConfig("polygon-mumbai"),
   },
   paths: {
     artifacts: "./artifacts",

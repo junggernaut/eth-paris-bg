@@ -88,6 +88,18 @@ async function main() {
     builderGardenContract.address,
     "\nBuilderVaultFactory: ",
     builderVaultFactory.address,
+    "\nBuilderVaultBeacon: ",
+    builderVaultBeacon.address,
+    "\nBuilderVaultImpl: ",
+    builderVaultImpl.address,
+    "\nBuilderGardenNft: ",
+    builderGardenNft.address,
+    "\nBuilderGardenTBARegistry: ",
+    registryContract.address,
+    "\nBuilderGardenTBA: ",
+    tbaImpl.address,
+    "\nALT: ",
+    altContract.address,
   );
 }
 

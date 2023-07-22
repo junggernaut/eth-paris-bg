@@ -91,7 +91,7 @@ describe("initTest", function () {
   });
 
   it("builder: user1 signUp", async function () {
-    const signupReciept = await (await builderGardenContract.connect(user1).builderSignUp()).wait();
+    const signupReciept = await (await builderGardenContract.connect(user1).builderSignUp("seungan")).wait();
     if (signupReciept.events) {
       const event = signupReciept.events.find(e => e.event === "SignUp") as Event;
       if (event.args) {
@@ -109,7 +109,7 @@ describe("initTest", function () {
   });
 
   it("backer: user2 signUp", async function () {
-    const signupReciept = await (await builderGardenContract.connect(user2).backerSignUp()).wait();
+    const signupReciept = await (await builderGardenContract.connect(user2).backerSignUp("gunwoo")).wait();
     if (signupReciept.events) {
       const event = signupReciept.events.find(e => e.event === "SignUp") as Event;
       if (event.args) {
@@ -126,7 +126,7 @@ describe("initTest", function () {
     expect(await builderGardenNft.balanceOf(user2.address)).to.equal(1);
     expect(await builderGardenContract.getTBAAddress(user2.address)).to.equal(user2Tba.address);
     //user3 as backer with same logic
-    const signupReciept2 = await (await builderGardenContract.connect(user3).backerSignUp()).wait();
+    const signupReciept2 = await (await builderGardenContract.connect(user3).backerSignUp("jooho")).wait();
     if (signupReciept2.events) {
       const event = signupReciept2.events.find(e => e.event === "SignUp") as Event;
       if (event.args) {
@@ -139,6 +139,7 @@ describe("initTest", function () {
     const fundingConfig = {
       totalAmount: ethers.utils.parseEther("1"),
       deadline: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+      title: "fund for seungan",
     };
     const receipt = await (await builderVaultFactory.connect(user1).deployVault(fundingConfig)).wait();
 
