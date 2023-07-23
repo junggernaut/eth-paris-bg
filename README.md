@@ -41,3 +41,14 @@
 <img width="533" alt="image" src="https://github.com/ethglobal-builder-garden/BuilderGarden/assets/102012918/5fa9ea2e-3c65-4224-bee9-ab8417dafa3c">
 
 
+
+## Sismo
+
+### Sismo connect for Human Verification at front-end
+[Sismo Connect for Human Verification] (https://github.com/ethglobal-builder-garden/builder-garden/blob/main/src/pages/profile/index.js#L504-L535)
+
+### contracts for on chain ZK Verificatio
+[BuilderGarden Contract] (https://github.com/ethglobal-builder-garden/BuilderGarden/blob/main/contracts/BuilderGarden.sol)
+
+
+
